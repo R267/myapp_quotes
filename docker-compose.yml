@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  myapp:
+    build: .
+    ports:
+      - ":8080"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_NAME: quotes_db
+      DB_USER: postgres
+      DB_PASS: postgres
+    restart: always
+    deploy:
+      replicas: 3  # Масштабування: 3 копії myapp
+    networks:
+      - app_network
+
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: quotes_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app_network
+
+volumes:
+  db_data:
+
+networks:
+  app_network:
